@@ -1,5 +1,11 @@
 ### Uninspirational quote of the day
 
 <!-- QUOTE:START -->
-> Check back tomorrow. Or don't.
+
+---
+
+![](https://i.kym-cdn.com/photos/images/newsfeed/002/591/629/09c.jpg)
+
+---
+
 <!-- QUOTE:END -->
