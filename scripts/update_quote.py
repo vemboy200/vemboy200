@@ -28,8 +28,15 @@ day = (today - datetime.date(2026, 1, 1)).days
 order = list(range(len(quotes)))
 random.Random(day // len(quotes)).shuffle(order)
 quote = quotes[order[day % len(quotes)]]
-# Each quote is one line in the secret, so a literal \n marks a line break.
-quote = quote.replace("\\n", "<br>")
+
+# A manual "reroll" run swaps in a random different quote until the next midnight.
+if os.environ.get("REROLL") == "true":
+    shown = re.search(re.escape(START) + r"\s*---\s*(.*?)\s*---\s*" + re.escape(END), README.read_text(), re.S)
+    shown = shown.group(1).replace("<br>\n", "\\n") if shown else None
+    quote = random.choice([q for q in quotes if q != shown] or quotes)
+# Each quote is one line in the secret, so a literal \n marks a line break. It becomes a real
+# newline too, so markdown that has to start a line (like > or -) works after it.
+quote = quote.replace("\\n", "<br>\n")
 
 # Blank lines around the quote matter: text directly above --- turns into a heading.
 block = f"{START}\n\n---\n\n{quote}\n\n---\n\n{END}"
