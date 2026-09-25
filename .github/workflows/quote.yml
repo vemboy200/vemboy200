@@ -12,24 +12,58 @@ on:
         description: "Show a random different quote until midnight (off = just redo today's quote)"
         type: boolean
         default: false
+  # Ticking a box in the "Admin Commands" issue runs that command.
+  issues:
+    types: [edited]
 
 permissions:
   contents: write
+  issues: write
+
+# Never let two runs push at the same time.
+concurrency:
+  group: quote
+  cancel-in-progress: false
 
 jobs:
   update:
+    # For issue edits, only react to the admin issue (#1), and only when the repo owner ticked the box.
+    if: github.event_name != 'issues' || (github.event.issue.number == 1 && github.event.sender.login == github.repository_owner)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 2
+      - name: Check the admin checkboxes
+        id: admin
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          reroll="${{ inputs.reroll || 'false' }}"
+          run=true
+          if [ "${{ github.event_name }}" = "issues" ]; then
+            run=false
+            if printf '%s\n' "$ISSUE_BODY" | grep -qiE '^- \[x\] Reroll'; then reroll=true; run=true; fi
+            if printf '%s\n' "$ISSUE_BODY" | grep -qiE '^- \[x\] Refresh'; then run=true; fi
+            if [ "$run" = true ]; then
+              # Untick everything so the boxes are ready for next time.
+              printf '%s\n' "$ISSUE_BODY" | sed -E 's/^- \[[xX]\] /- [ ] /' > body.md
+              gh issue edit ${{ github.event.issue.number }} --repo ${{ github.repository }} --body-file body.md
+              rm body.md
+            fi
+          fi
+          echo "reroll=$reroll" >> "$GITHUB_OUTPUT"
+          echo "run=$run" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-python@v5
+        if: steps.admin.outputs.run == 'true'
         with:
           python-version: "3.12"
       - name: Pick today's quote
+        if: steps.admin.outputs.run == 'true'
         env:
           QUOTES: ${{ secrets.QUOTES }}
-          REROLL: ${{ inputs.reroll }}
+          REROLL: ${{ steps.admin.outputs.reroll }}
         run: python scripts/update_quote.py
       # If the latest commit is yesterday's quote, replace it instead of stacking a new one,
       # so old quotes don't pile up in the commit history.
