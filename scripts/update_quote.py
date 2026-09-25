@@ -31,7 +31,8 @@ quote = quotes[order[day % len(quotes)]]
 # Each quote is one line in the secret, so a literal \n marks a line break.
 quote = quote.replace("\\n", "<br>")
 
-block = f"{START}\n> {quote}\n{END}"
+# Blank lines around the quote matter: text directly above --- turns into a heading.
+block = f"{START}\n\n---\n\n{quote}\n\n---\n\n{END}"
 text = README.read_text()
 new_text, count = re.subn(re.escape(START) + r".*?" + re.escape(END), lambda _: block, text, flags=re.S)
 if count == 0:
