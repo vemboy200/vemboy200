@@ -7,6 +7,11 @@ on:
     - cron: "0 7 * * *"
     - cron: "0 8 * * *"
   workflow_dispatch:
+    inputs:
+      reroll:
+        description: "Show a random different quote until midnight (off = just redo today's quote)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -24,6 +29,7 @@ jobs:
       - name: Pick today's quote
         env:
           QUOTES: ${{ secrets.QUOTES }}
+          REROLL: ${{ inputs.reroll }}
         run: python scripts/update_quote.py
       # If the latest commit is yesterday's quote, replace it instead of stacking a new one,
       # so old quotes don't pile up in the commit history.
