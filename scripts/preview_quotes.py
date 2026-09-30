@@ -4,6 +4,7 @@ Run it from anywhere: python3 scripts/preview_quotes.py
 It starts a small page on http://localhost:8765 (only reachable from this computer) with two buttons:
 - Refresh preview: re-reads quotes.txt and renders it again
 - Reroll live quote: runs the GitHub Action with reroll on, so your profile shows a different quote
+- Show on profile (on each quote): runs the Action to show that exact quote until midnight
 Needs the gh CLI (logged in). Press Ctrl+C to stop it.
 """
 
@@ -33,7 +34,8 @@ def build_page() -> str:
     with ThreadPoolExecutor(8) as pool:
         rendered = list(pool.map(render, quotes))
     cards = "".join(
-        f'<section><h4>Quote {number}</h4><div class="markdown-body">{body}</div>'
+        f'<section><h4>Quote {number} <button class="show" data-number="{number}">Show on profile</button></h4>'
+        f'<div class="markdown-body">{body}</div>'
         f"<details><summary>Raw line</summary><code>{html.escape(quote)}</code></details></section>"
         for number, (quote, body) in enumerate(zip(quotes, rendered), 1)
     )
@@ -43,7 +45,8 @@ def build_page() -> str:
 <style>
   body {{ max-width: 830px; margin: 24px auto; padding: 0 16px; font-family: -apple-system, sans-serif; background: #fff; }}
   section {{ border: 1px solid #d0d7de; border-radius: 6px; padding: 8px 24px 16px; margin-bottom: 20px; }}
-  h4 {{ color: #656d76; margin: 8px 0; }}
+  h4 {{ color: #656d76; margin: 8px 0; display: flex; justify-content: space-between; align-items: center; }}
+  h4 button {{ font-size: 12px; padding: 3px 10px; font-weight: normal; }}
   code {{ word-break: break-all; font-size: 12px; }}
   summary {{ color: #656d76; font-size: 12px; cursor: pointer; }}
   .bar {{ position: sticky; top: 0; background: #fff; padding: 12px 0; display: flex; gap: 8px; align-items: center; border-bottom: 1px solid #d0d7de; margin-bottom: 20px; }}
@@ -66,14 +69,20 @@ def build_page() -> str:
     status.textContent = "Rendering quotes.txt...";
     location.reload();
   }};
-  document.getElementById("reroll").onclick = async (e) => {{
-    if (!confirm("Show a different random quote on your GitHub profile until midnight?")) return;
-    e.target.disabled = true;
+  async function run(button, path, question) {{
+    if (!confirm(question)) return;
+    button.disabled = true;
     status.textContent = "Starting the GitHub Action...";
-    const response = await fetch("/reroll", {{ method: "POST", headers: {{ "X-Reroll": "1" }} }});
+    const response = await fetch(path, {{ method: "POST", headers: {{ "X-Reroll": "1" }} }});
     status.textContent = await response.text();
-    e.target.disabled = false;
-  }};
+    button.disabled = false;
+  }}
+  document.getElementById("reroll").onclick = (e) =>
+    run(e.target, "/reroll", "Show a different random quote on your GitHub profile until midnight?");
+  for (const button of document.querySelectorAll("button.show")) {{
+    button.onclick = () => run(button, "/show/" + button.dataset.number,
+      "Show quote " + button.dataset.number + " on your GitHub profile until midnight?");
+  }}
 </script>
 </body></html>
 """
@@ -91,17 +100,24 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         # Other websites can't send this custom header to localhost, so only this page can reroll.
-        if self.path != "/reroll" or self.headers.get("X-Reroll") != "1":
+        if self.headers.get("X-Reroll") != "1":
+            self.send_error(404)
+            return
+        if self.path == "/reroll":
+            field = "reroll=true"
+        elif self.path.startswith("/show/") and self.path[6:].isdigit():
+            field = f"number={self.path[6:]}"
+        else:
             self.send_error(404)
             return
         result = subprocess.run(
-            ["gh", "workflow", "run", "quote.yml", "-f", "reroll=true"],
+            ["gh", "workflow", "run", "quote.yml", "-f", field],
             cwd=REPO, capture_output=True, text=True,
         )
         if result.returncode == 0:
-            self.reply(200, "text/plain", "Reroll started. Your profile updates in about a minute.")
+            self.reply(200, "text/plain", "Started. Your profile updates in about a minute.")
         else:
-            self.reply(500, "text/plain", f"Reroll failed: {result.stderr.strip()}")
+            self.reply(500, "text/plain", f"Failed: {result.stderr.strip()}")
 
     def reply(self, code: int, content_type: str, body: str):
         data = body.encode()
