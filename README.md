@@ -1,13 +1,15 @@
-[![claude-rpc token rank: #4](https://img.shields.io/badge/claude--rpc%20token%20rank-%234-d97757)](https://claude-rpc.com/?ref=badge) ![Claude cost](https://gist.githubusercontent.com/vemboy200/d95703ef9098e040ece634ceac12c5ee/raw/claude.svg) ![Dishwasher](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fvemboy200%2F3fe0efb76ac8c56659081e86cda9e069%2Fraw%2Fdishwasher.json) ![Outside temp](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fvemboy200%2F3fe0efb76ac8c56659081e86cda9e069%2Fraw%2Ftemperature.json) ![Homework](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fvemboy200%2F3fe0efb76ac8c56659081e86cda9e069%2Fraw%2Fhomework.json)
+[![claude-rpc token rank: #3](https://img.shields.io/badge/claude--rpc%20token%20rank-%233-d97757)](https://claude-rpc.com/?ref=badge) ![Claude cost](https://gist.githubusercontent.com/vemboy200/d95703ef9098e040ece634ceac12c5ee/raw/claude.svg) ![Dishwasher](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fvemboy200%2F3fe0efb76ac8c56659081e86cda9e069%2Fraw%2Fdishwasher.json) ![Outside temp](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fvemboy200%2F3fe0efb76ac8c56659081e86cda9e069%2Fraw%2Ftemperature.json) ![Homework](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fvemboy200%2F3fe0efb76ac8c56659081e86cda9e069%2Fraw%2Fhomework.json)
 
 
 ### Uninspirational quote of the day
 
 <!-- QUOTE:START -->
+<!-- shown: 2026-10-10 ac0a4467 ed4d9202 ea5bc0d2 450709a4 befc034c 3fabd46e de9ba8d2 87d47571 08d84101 30ce7a71 ac0a4467 36909e72 6a65de1a -->
 
 ---
 
-![](https://i.kym-cdn.com/photos/images/newsfeed/002/591/629/09c.jpg)
+<img width="600" alt="claude usage be like" src="https://i.imgur.com/b3jTgR2.png" /><br>
+> "borrowed" from codesloth
 
 ---
 
