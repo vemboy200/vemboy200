@@ -8,8 +8,6 @@ import urllib.request
 from pathlib import Path
 
 README = Path("README.md")
-START = "<!-- RANK:START -->"
-END = "<!-- RANK:END -->"
 HANDLE = "vemboy200"
 LEADERBOARD = "https://claude-rpc-totals.claude-rpc.workers.dev/leaderboard?metric=tokens"
 
@@ -26,11 +24,13 @@ def shields(text: str) -> str:
     return urllib.parse.quote(text.replace("-", "--").replace("_", "__"))
 
 badge = f"https://img.shields.io/badge/{shields('claude-rpc token rank')}-{shields(rank)}-d97757"
-block = f"{START}\n[![claude-rpc token rank: {rank}]({badge})](https://claude-rpc.com/?ref=badge)\n{END}"
+new_badge = f"[![claude-rpc token rank: {rank}]({badge})](https://claude-rpc.com/?ref=badge)"
 
+# Find the existing rank badge wherever it is in the README and swap it for the new one.
+pattern = r"\[!\[claude-rpc token rank: [^\]]*\]\(https://img\.shields\.io/badge/claude--rpc[^)]*\)\]\([^)]*\)"
 text = README.read_text()
-new_text, count = re.subn(re.escape(START) + r".*?" + re.escape(END), lambda _: block, text, flags=re.S)
+new_text, count = re.subn(pattern, lambda _: new_badge, text)
 if count == 0:
-    sys.exit(f"Couldn't find {START} / {END} markers in README.md")
+    sys.exit("Couldn't find the claude-rpc token rank badge in README.md")
 README.write_text(new_text)
 print(f"Rank: {rank}")
