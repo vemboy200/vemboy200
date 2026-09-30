@@ -1,3 +1,6 @@
+[![claude-rpc token rank: #4](https://img.shields.io/badge/claude--rpc%20token%20rank-%234-d97757)](https://claude-rpc.com/?ref=badge) ![Claude cost](https://gist.githubusercontent.com/vemboy200/d95703ef9098e040ece634ceac12c5ee/raw/claude.svg)
+
+
 ### Uninspirational quote of the day
 
 <!-- QUOTE:START -->
@@ -25,8 +28,6 @@ Anyways heres the numbers and stuff, unfortunately it doesn't calculate the wate
 
 [![Claude Code stats](https://claude-rpc-totals.claude-rpc.workers.dev/card/vemboy200.svg)](https://claude-rpc.com/u/vemboy200)
 
-<!-- RANK:START -->
-[![claude-rpc token rank: #4](https://img.shields.io/badge/claude--rpc%20token%20rank-%234-d97757)](https://claude-rpc.com/?ref=badge)
-<!-- RANK:END -->
 
-![Claude cost](https://gist.githubusercontent.com/vemboy200/d95703ef9098e040ece634ceac12c5ee/raw/claude.svg)
+
+
