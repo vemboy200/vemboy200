@@ -27,7 +27,3 @@ Now I am vibecoder or "AgEnTiC eNGiNeEr" (it depends on which one you want to ca
 Anyways heres the numbers and stuff, unfortunately it doesn't calculate the water use but whatever
 
 [![Claude Code stats](https://claude-rpc-totals.claude-rpc.workers.dev/card/vemboy200.svg)](https://claude-rpc.com/u/vemboy200)
-
-
-
-
