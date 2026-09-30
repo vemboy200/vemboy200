@@ -3,11 +3,16 @@
 Quotes come from the QUOTES environment variable (one per line), which the
 workflow fills from a repository secret so the full list stays hidden.
 
-With --blank it puts the placeholder back instead. The workflow runs that on
-every old commit so past quotes don't stay in the history.
+"We're making it less random to make it feel more random." A quote never
+comes back until at least half the list (rounded up) has been shown since.
+To remember what was shown, the README keeps a hidden comment with short
+hashes of recent quotes. Hashes of quotes that were already public reveal
+nothing about the ones that weren't.
 """
 
 import datetime
+import hashlib
+import math
 import os
 import random
 import re
@@ -18,54 +23,63 @@ from zoneinfo import ZoneInfo
 README = Path("README.md")
 START = "<!-- QUOTE:START -->"
 END = "<!-- QUOTE:END -->"
-PLACEHOLDER = "Check back tomorrow. Or don't."
+BLOCK = re.compile(re.escape(START) + r".*?" + re.escape(END), re.S)
+HISTORY = re.compile(r"<!-- shown: (\S+)((?: [0-9a-f]{8})*) -->")
+SHOWN_QUOTE = re.compile(r"---\s*(.*?)\s*---", re.S)
 
 
-def write_quote(quote: str) -> bool:
-    """Put quote between the markers. Returns False if README.md has no markers."""
-    if not README.exists():
-        return False
-    # Blank lines around the quote matter: text directly above --- turns into a heading.
-    block = f"{START}\n\n---\n\n{quote}\n\n---\n\n{END}"
-    text = README.read_text()
-    new_text, count = re.subn(re.escape(START) + r".*?" + re.escape(END), lambda _: block, text, flags=re.S)
-    if count and new_text != text:
-        README.write_text(new_text)
-    return bool(count)
+def short_hash(quote: str) -> str:
+    return hashlib.sha256(quote.encode()).hexdigest()[:8]
 
-
-if "--blank" in sys.argv:
-    # Old commits from before the markers existed have nothing to blank, which is fine.
-    write_quote(PLACEHOLDER)
-    sys.exit()
 
 quotes = [line.strip() for line in os.environ.get("QUOTES", "").splitlines() if line.strip()]
 if not quotes:
     sys.exit("QUOTES is empty, add the QUOTES repository secret")
+by_hash = {short_hash(q): q for q in quotes}
 
-# Days since a fixed start, in Pacific time, so the quote flips at midnight PT.
-today = datetime.datetime.now(ZoneInfo("America/Los_Angeles")).date()
-day = (today - datetime.date(2026, 1, 1)).days
+text = README.read_text()
+block = BLOCK.search(text)
+if not block:
+    sys.exit(f"Couldn't find {START} / {END} markers in README.md")
 
-# Go through every quote once (in a shuffled order) before any repeats.
-order = list(range(len(quotes)))
-random.Random(day // len(quotes)).shuffle(order)
-quote = quotes[order[day % len(quotes)]]
+# Read the history of shown quotes, oldest first. Before the history existed, start it
+# with whatever quote is on the README right now.
+history_match = HISTORY.search(block.group())
+if history_match:
+    last_day, history = history_match.group(1), history_match.group(2).split()
+else:
+    shown = SHOWN_QUOTE.search(block.group())
+    shown = shown.group(1).replace("<br>\n", "\\n") if shown else ""
+    last_day, history = "", [short_hash(shown)] if short_hash(shown) in by_hash else []
+current = history[-1] if history else None
 
-# A manual "reroll" run swaps in a random different quote until the next midnight.
-if os.environ.get("REROLL") == "true":
-    shown = re.search(re.escape(START) + r"\s*---\s*(.*?)\s*---\s*" + re.escape(END), README.read_text(), re.S)
-    shown = shown.group(1).replace("<br>\n", "\\n") if shown else None
-    quote = random.choice([q for q in quotes if q != shown] or quotes)
-
-# A manual run can also pick a specific quote by its line number in quotes.txt (starting at 1).
+# Midnight Pacific decides what "today" is.
+today = datetime.datetime.now(ZoneInfo("America/Los_Angeles")).date().isoformat()
 number = os.environ.get("QUOTE_NUMBER", "").strip()
+reroll = os.environ.get("REROLL") == "true"
+
 if number:
+    # A manual run can pick a specific quote by its line number in quotes.txt (starting at 1).
     if not number.isdigit() or not 1 <= int(number) <= len(quotes):
         sys.exit(f"Quote number must be between 1 and {len(quotes)}, got {number!r}")
     quote = quotes[int(number) - 1]
+elif reroll or last_day != today or current not in by_hash:
+    # New day, a reroll, or today's quote was removed from the list: pick one that hasn't
+    # been shown in the last ceil(count / 2) picks.
+    recent = set(history[-math.ceil(len(quotes) / 2):])
+    choices = [q for q in quotes if short_hash(q) not in recent] or [q for q in quotes if short_hash(q) != current]
+    quote = random.choice(choices or quotes)
+else:
+    print("Today's quote is already up")
+    sys.exit()
+
+history = (history + [short_hash(quote)])[-len(quotes):]
 
 # Each quote is one line in the secret, so a literal \n marks a line break. It becomes a real
 # newline too, so markdown that has to start a line (like > or -) works after it.
-if not write_quote(quote.replace("\\n", "<br>\n")):
-    sys.exit(f"Couldn't find {START} / {END} markers in README.md")
+# Blank lines around the quote matter: text directly above --- turns into a heading.
+new_block = (
+    f"{START}\n<!-- shown: {today} {' '.join(history)} -->\n\n---\n\n"
+    f"{quote.replace(chr(92) + 'n', '<br>' + chr(10))}\n\n---\n\n{END}"
+)
+README.write_text(text[: block.start()] + new_block + text[block.end():])
