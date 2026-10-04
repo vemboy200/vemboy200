@@ -1,8 +1,8 @@
-"""Preview every quote in quotes.txt, rendered by GitHub's markdown renderer.
+"""Preview every quote in quotes.md, rendered by GitHub's markdown renderer.
 
 Run it from anywhere: python3 scripts/preview_quotes.py
 It starts a small page on http://localhost:8765 (only reachable from this computer) with two buttons:
-- Refresh preview: re-reads quotes.txt and renders it again
+- Refresh preview: re-reads quotes.md and renders it again
 - Reroll live quote: runs the GitHub Action with reroll on, so your profile shows a different quote
 - Show on profile (on each quote): runs the Action to show that exact quote until midnight
 Needs the gh CLI (logged in). Press Ctrl+C to stop it.
@@ -16,13 +16,15 @@ from concurrent.futures import ThreadPoolExecutor
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
+from quote_format import parse, render
+
 REPO = Path(__file__).resolve().parent.parent
 PORT = 8765
 
 
-def render(quote: str) -> str:
+def render_html(quote: str) -> str:
     # Same formatting the daily workflow uses.
-    markdown = f"---\n\n{quote.replace(chr(92) + 'n', '<br>' + chr(10))}\n\n---"
+    markdown = f"---\n\n{render(quote)}\n\n---"
     return subprocess.run(
         ["gh", "api", "markdown", "-f", "mode=gfm", "-f", f"text={markdown}"],
         capture_output=True, text=True, check=True,
@@ -30,13 +32,13 @@ def render(quote: str) -> str:
 
 
 def build_page() -> str:
-    quotes = [line.strip() for line in (REPO / "quotes.txt").read_text().splitlines() if line.strip()]
+    quotes = parse((REPO / "quotes.md").read_text())
     with ThreadPoolExecutor(8) as pool:
-        rendered = list(pool.map(render, quotes))
+        rendered = list(pool.map(render_html, quotes))
     cards = "".join(
         f'<section><h4>Quote {number} <button class="show" data-number="{number}">Show on profile</button></h4>'
         f'<div class="markdown-body">{body}</div>'
-        f"<details><summary>Raw line</summary><code>{html.escape(quote)}</code></details></section>"
+        f"<details><summary>Raw markdown</summary><pre>{html.escape(quote)}</pre></details></section>"
         for number, (quote, body) in enumerate(zip(quotes, rendered), 1)
     )
     return f"""<!doctype html>
@@ -47,7 +49,7 @@ def build_page() -> str:
   section {{ border: 1px solid #d0d7de; border-radius: 6px; padding: 8px 24px 16px; margin-bottom: 20px; }}
   h4 {{ color: #656d76; margin: 8px 0; display: flex; justify-content: space-between; align-items: center; }}
   h4 button {{ font-size: 12px; padding: 3px 10px; font-weight: normal; }}
-  code {{ word-break: break-all; font-size: 12px; }}
+  pre {{ white-space: pre-wrap; word-break: break-all; font-size: 12px; }}
   summary {{ color: #656d76; font-size: 12px; cursor: pointer; }}
   .bar {{ position: sticky; top: 0; background: #fff; padding: 12px 0; display: flex; gap: 8px; align-items: center; border-bottom: 1px solid #d0d7de; margin-bottom: 20px; }}
   button {{ font: inherit; padding: 6px 14px; border-radius: 6px; border: 1px solid #d0d7de; background: #f6f8fa; cursor: pointer; }}
@@ -66,7 +68,7 @@ def build_page() -> str:
   const status = document.getElementById("status");
   document.getElementById("refresh").onclick = (e) => {{
     e.target.disabled = true;
-    status.textContent = "Rendering quotes.txt...";
+    status.textContent = "Rendering quotes.md...";
     location.reload();
   }};
   async function run(button, path, question) {{
