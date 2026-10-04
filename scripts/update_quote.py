@@ -1,7 +1,8 @@
 """Swap today's uninspirational quote into README.md.
 
-Quotes come from the QUOTES environment variable (one per line), which the
-workflow fills from a repository secret so the full list stays hidden.
+Quotes come from the QUOTES environment variable (the contents of quotes.md,
+see quote_format.py), which the workflow fills from a repository secret so the
+full list stays hidden.
 
 "We're making it less random to make it feel more random." A quote never
 comes back until at least half the list (rounded up) has been shown since.
@@ -20,6 +21,8 @@ import sys
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+from quote_format import parse, render
+
 README = Path("README.md")
 START = "<!-- QUOTE:START -->"
 END = "<!-- QUOTE:END -->"
@@ -32,7 +35,7 @@ def short_hash(quote: str) -> str:
     return hashlib.sha256(quote.encode()).hexdigest()[:8]
 
 
-quotes = [line.strip() for line in os.environ.get("QUOTES", "").splitlines() if line.strip()]
+quotes = parse(os.environ.get("QUOTES", ""))
 if not quotes:
     sys.exit("QUOTES is empty, add the QUOTES repository secret")
 by_hash = {short_hash(q): q for q in quotes}
@@ -49,7 +52,7 @@ if history_match:
     last_day, history = history_match.group(1), history_match.group(2).split()
 else:
     shown = SHOWN_QUOTE.search(block.group())
-    shown = shown.group(1).replace("<br>\n", "\\n") if shown else ""
+    shown = shown.group(1).replace("<br>\n", "\n") if shown else ""
     last_day, history = "", [short_hash(shown)] if short_hash(shown) in by_hash else []
 current = history[-1] if history else None
 
@@ -59,7 +62,7 @@ number = os.environ.get("QUOTE_NUMBER", "").strip()
 reroll = os.environ.get("REROLL") == "true"
 
 if number:
-    # A manual run can pick a specific quote by its line number in quotes.txt (starting at 1).
+    # A manual run can pick a specific quote by its number in quotes.md (starting at 1).
     if not number.isdigit() or not 1 <= int(number) <= len(quotes):
         sys.exit(f"Quote number must be between 1 and {len(quotes)}, got {number!r}")
     quote = quotes[int(number) - 1]
@@ -75,11 +78,9 @@ else:
 
 history = (history + [short_hash(quote)])[-len(quotes):]
 
-# Each quote is one line in the secret, so a literal \n marks a line break. It becomes a real
-# newline too, so markdown that has to start a line (like > or -) works after it.
 # Blank lines around the quote matter: text directly above --- turns into a heading.
 new_block = (
     f"{START}\n<!-- shown: {today} {' '.join(history)} -->\n\n---\n\n"
-    f"{quote.replace(chr(92) + 'n', '<br>' + chr(10))}\n\n---\n\n{END}"
+    f"{render(quote)}\n\n---\n\n{END}"
 )
 README.write_text(text[: block.start()] + new_block + text[block.end():])

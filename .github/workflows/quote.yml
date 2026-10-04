@@ -13,7 +13,7 @@ on:
         type: boolean
         default: false
       number:
-        description: "Show this quote number until midnight (its line in quotes.txt, starting at 1). Leave empty to skip."
+        description: "Show this quote number until midnight (its number in quotes.md, starting at 1). Leave empty to skip."
         type: string
         default: ""
   # Ticking a box in the "Admin Commands" issue runs that command.
