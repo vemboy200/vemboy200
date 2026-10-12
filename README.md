@@ -1,4 +1,4 @@
-[![claude-rpc token rank: #4](https://img.shields.io/badge/claude--rpc%20token%20rank-%234-d97757)](https://claude-rpc.com/?ref=badge) ![Claude cost](https://gist.githubusercontent.com/vemboy200/d95703ef9098e040ece634ceac12c5ee/raw/claude.svg) ![Dishwasher](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fvemboy200%2F3fe0efb76ac8c56659081e86cda9e069%2Fraw%2Fdishwasher.json) ![Outside temp](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fvemboy200%2F3fe0efb76ac8c56659081e86cda9e069%2Fraw%2Ftemperature.json) ![Homework](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fvemboy200%2F3fe0efb76ac8c56659081e86cda9e069%2Fraw%2Fhomework.json)
+[![claude-rpc token rank: #2](https://img.shields.io/badge/claude--rpc%20token%20rank-%232-d97757)](https://claude-rpc.com/?ref=badge) ![Claude cost](https://gist.githubusercontent.com/vemboy200/d95703ef9098e040ece634ceac12c5ee/raw/claude.svg) ![Dishwasher](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fvemboy200%2F3fe0efb76ac8c56659081e86cda9e069%2Fraw%2Fdishwasher.json) ![Outside temp](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fvemboy200%2F3fe0efb76ac8c56659081e86cda9e069%2Fraw%2Ftemperature.json) ![Homework](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fvemboy200%2F3fe0efb76ac8c56659081e86cda9e069%2Fraw%2Fhomework.json)
 
 
 ### Uninspirational quote of the day
@@ -9,7 +9,7 @@
 Hi I'm vemboy200 (or vemboy20 but on github it was already taken sooo...). I work mostly Home Assistant related stuff including
 
 - [Homeconnect_local_hass](https://github.com/vemboy200/homeconnect_local_hass): Take your Home Connect Appliances offline and use them to the full extent using this custom integration!
-- [Home-disconnect](https://github.com/vemboy200/home-disconnect): The python package for it (rewrite pending)
+- [Home-disconnect](https://github.com/vemboy200/home-disconnect): The python package for it (rewrite is in beta)
 - [Powershades integration](https://github.com/vemboy200/hass-powershades): (custom for now core submission pending) operate some shades ig. Doesn't require internet.
 - [Pyowershades](https://github.com/vemboy200/Pyowershades): The python package for it.
 - [Classdash](https://github.com/vemboy200/ClassDash): unpopular side project that manages school work collection for you
