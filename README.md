@@ -1,9 +1,17 @@
-[![claude-rpc token rank: #2](https://img.shields.io/badge/claude--rpc%20token%20rank-%232-d97757)](https://claude-rpc.com/?ref=badge) ![Claude cost](https://gist.githubusercontent.com/vemboy200/d95703ef9098e040ece634ceac12c5ee/raw/claude.svg) ![Dishwasher](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fvemboy200%2F3fe0efb76ac8c56659081e86cda9e069%2Fraw%2Fdishwasher.json) ![Outside temp](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fvemboy200%2F3fe0efb76ac8c56659081e86cda9e069%2Fraw%2Ftemperature.json) ![Homework](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fvemboy200%2F3fe0efb76ac8c56659081e86cda9e069%2Fraw%2Fhomework.json) ![Discord: vemboy20](https://img.shields.io/badge/Discord-vemboy20-5865F2?logo=discord&logoColor=white)
+[![claude-rpc token rank: #9](https://img.shields.io/badge/claude--rpc%20token%20rank-%239-d97757)](https://claude-rpc.com/?ref=badge) ![Claude cost](https://gist.githubusercontent.com/vemboy200/d95703ef9098e040ece634ceac12c5ee/raw/claude.svg) ![Dishwasher](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fvemboy200%2F3fe0efb76ac8c56659081e86cda9e069%2Fraw%2Fdishwasher.json) ![Outside temp](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fvemboy200%2F3fe0efb76ac8c56659081e86cda9e069%2Fraw%2Ftemperature.json) ![Homework](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fvemboy200%2F3fe0efb76ac8c56659081e86cda9e069%2Fraw%2Fhomework.json) ![Discord: vemboy20](https://img.shields.io/badge/Discord-vemboy20-5865F2?logo=discord&logoColor=white)
 
 
 ### Uninspirational quote of the day
 
 <!-- QUOTE:START -->
+<!-- shown: 2026-11-27 0a8588a9 77550707 30ce7a71 6a65de1a 450709a4 de9ba8d2 08d84101 ea5bc0d2 3fabd46e ed4d9202 c6b3ffaa 0a8588a9 87d47571 c3a784b4 764ab950 36909e72 77550707 de9ba8d2 -->
+
+---
+
+![](https://i.imgflip.com/6qvjdm.png)
+
+---
+
 <!-- QUOTE:END -->
 
 Hi I'm vemboy200 (or vemboy20 but on github it was already taken sooo...). I work mostly Home Assistant related stuff including
